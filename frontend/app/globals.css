@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+/* Dotted paper: a quiet texture that gives the canvas depth without competing with content. */
+body {
+  @apply bg-paper text-ink antialiased;
+  background-image: radial-gradient(#CFD5CB 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-attachment: fixed;
+}
+
+:focus-visible {
+  outline: 2px solid #0E6257;
+  outline-offset: 2px;
+}
+
+/* Editor content. Same styles for editing and read-only views. */
+.prose-task p {
+  margin: 0.35rem 0;
+  line-height: 1.9;
+}
+.prose-task h2 {
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin: 0.7rem 0 0.3rem;
+}
+.prose-task h3 {
+  font-weight: 700;
+  margin: 0.5rem 0 0.25rem;
+}
+.prose-task ul {
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+.prose-task ol {
+  list-style: decimal;
+  padding-inline-start: 1.25rem;
+}
+.prose-task blockquote {
+  border-inline-start: 3px solid #0E6257;
+  padding-inline-start: 0.75rem;
+  color: #5F6F78;
+}
+.prose-task a {
+  color: #0E6257;
+  text-decoration: underline;
+}
+.prose-task p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #5F6F78;
+  float: inline-start;
+  height: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

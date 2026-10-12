@@ -1,0 +1,73 @@
+# Skills and agent instructions for this project
+#
+# Each entry is a reusable instruction an AI coding assistant (Claude Code, Cursor,
+# Codex, Copilot) should follow when working in this repository. Keep this file in
+# sync with CLAUDE.md. CLAUDE.md is the source of truth for rules.
+
+SKILL: nestjs-api
+  Use when: adding or changing backend endpoints.
+  Rules:
+    - Every route declares its authorization explicitly: @Roles(...) or @Public().
+    - Every DTO has class-validator decorators. Unknown fields are rejected globally.
+    - Return 404 (not 403) when a caller cannot see a resource, so existence does not leak.
+    - Business rules live in *.policy.ts (pure functions) and are unit-tested.
+
+SKILL: typeorm-migrations
+  Use when: changing the database.
+  Rules:
+    - Never enable synchronize.
+    - Each schema change is a new migration file under src/database/migrations.
+    - Write migrations as explicit SQL. Include a working down().
+    - Run `npm run migration:run` before `npm run seed` locally and in CI.
+
+SKILL: auth-and-sessions
+  Use when: touching login, refresh, logout, or guards.
+  Rules:
+    - Tokens live only in HttpOnly cookies. Never return them in a response body.
+    - Refresh tokens are stored as SHA-256 hashes. Rotate on every use.
+    - Reuse of a revoked refresh token revokes every session for that user.
+    - JwtAuthGuard must re-read the user and check is_active on every request.
+    - Passwords use argon2. Never log passwords, tokens, or description bodies.
+
+SKILL: tiptap-json
+  Use when: changing task descriptions or the editor.
+  Rules:
+    - Store TipTap JSON in jsonb. Never store or trust HTML.
+    - Validate on the server with tiptap.validator.ts. Keep the node and mark allow-lists in one place.
+    - Links must be http or https only, on both the server and the client.
+    - The read-only view uses the same editor component as edit mode.
+
+SKILL: nextjs-rtl-ui
+  Use when: building or changing screens.
+  Rules:
+    - The root element has dir="rtl" and lang="fa". Use logical properties
+      (ms-, me-, ps-, pe-, start-, end-, border-s-, border-e-). Avoid ml-/mr-/left-/right-.
+    - Use Headless UI for Dialog, Listbox and Menu. Do not add an admin UI framework.
+    - Persian copy is in the interface's voice: verb-first, no apology, no filler.
+    - Every screen handles loading (skeleton), empty (next step), and error (retry) states.
+    - Follow DESIGN.md. Do not introduce new colours outside the token list.
+
+SKILL: browser-storage-free
+  Use when: any client-side state persists.
+  Rules:
+    - Session state comes from /auth/me via React context. Do not store tokens in
+      localStorage or sessionStorage.
+    - Filters persist in the URL query string so views can be shared.
+
+SKILL: permission-review
+  Use when: reviewing any change that touches roles or task visibility.
+  Checklist:
+    - [ ] A Member cannot read a task they neither created nor are assigned to.
+    - [ ] A Member cannot change assigneeId to a different user. The API returns 403.
+    - [ ] A Member cannot call any /users route. The API returns 403.
+    - [ ] A disabled user is rejected on the next request with an old token.
+    - [ ] The last active Owner cannot be disabled or downgraded.
+    - [ ] docs/permissions.md still matches the code.
+
+SKILL: verify-before-merge
+  Use when: finishing any change.
+  Run, in order:
+    - backend: npm run lint && npm run build && npm test
+    - backend (with a database): npm run migration:run && npm run seed
+    - frontend: npm run lint && npm run typecheck && npm run build
+  Report what was run and what was not. Do not claim a check passed if it was not run.
