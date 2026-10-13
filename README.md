@@ -2,6 +2,8 @@
 
 A small internal task tool: sign-in with HttpOnly cookies, role-based access enforced in the API, a Kanban board and list of tasks with a clear assignee, TipTap rich descriptions, and an interface in Persian with right-to-left layout.
 
+<img width="1288" height="953" alt="image" src="https://github.com/user-attachments/assets/0a115380-7298-4d67-9db7-d793056ad1c8" />
+
 ## Quick start (Docker)
 
 ```bash
