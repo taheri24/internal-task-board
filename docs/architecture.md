@@ -3,7 +3,7 @@
 ## Components
 
 ```
-Browser ──► Next.js (3000) ──rewrite /api/v1/*──► NestJS (4000) ──► PostgreSQL (5432)
+Browser ──► Next.js (3000) ──rewrite /api/v1/*──► NestJS (4000) ──► PostgreSQL (5433)
             UI, middleware                       auth, RBAC, API    migrations only
 ```
 
@@ -33,6 +33,15 @@ Browser ──► Next.js (3000) ──rewrite /api/v1/*──► NestJS (4000) 
 | `audit_logs` | before/after JSON for task and user changes |
 
 The schema is created only by the migration in `src/database/migrations`. TypeORM `synchronize` is off.
+
+## Health check
+
+`GET /ping` (full path `/api/v1/ping`, because of the global prefix) reports the health of the process and the database in one shot:
+
+- Public on purpose — `@Public()` bypasses `JwtAuthGuard`, so an orchestration probe needs no session.
+- Runs `SELECT NOW()` against PostgreSQL and reports round-trip latency plus the database server time (useful for spotting clock drift).
+- Reports row counts for `users`, `tasks` (live board size; soft-deleted rows are excluded by TypeORM), `audit_logs`, and `refresh_tokens`. Only aggregates are exposed, never row contents.
+- Returns HTTP 200 with `status: "ok"` while the process and database are reachable, and HTTP 503 with `status: "down"` plus the driver error when the database connection is lost after startup. (If the database is unreachable at boot, NestJS itself fails to start, so probes see a closed port instead.)
 
 ## TipTap storage
 

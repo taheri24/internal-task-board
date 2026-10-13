@@ -7,6 +7,7 @@ import { join } from 'path';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { TodosModule } from './todos/todos.module';
+import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuditModule,
     AuthModule,
+    HealthModule,
     UsersModule,
     TodosModule,
   ],

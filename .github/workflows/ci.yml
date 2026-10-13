@@ -14,11 +14,11 @@ jobs:
           POSTGRES_USER: taskboard
           POSTGRES_PASSWORD: taskboard
           POSTGRES_DB: taskboard
-        ports: ["5432:5432"]
+        ports: ["5433:5432"]
         options: >-
           --health-cmd "pg_isready -U taskboard" --health-interval 5s --health-retries 10
     env:
-      DATABASE_URL: postgres://taskboard:taskboard@localhost:5432/taskboard
+      DATABASE_URL: postgres://taskboard:taskboard@localhost:5433/taskboard
       JWT_SECRET: ci-only-secret-value-that-is-long-enough
     steps:
       - uses: actions/checkout@v4

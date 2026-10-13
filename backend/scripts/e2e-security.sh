@@ -114,5 +114,14 @@ check "owner re-enables member" 200 $(code "$(req $OWN PATCH /users/$MEM_ID '{"i
 login $J/lo manager@taskboard.local Manager@12345 >/dev/null
 check "logout" 204 $(curl -s -b $J/lo -c $J/lo -X POST $API/auth/logout -o /dev/null -w "%{http_code}")
 
+# Health endpoint: public, and it never leaks row contents
+PING=$(curl -s $API/ping); check "ping is public" 200 $(curl -s -o /dev/null -w "%{http_code}" $API/ping)
+if echo "$PING" | json "d['status']=='ok' and d['database']['status']=='up' and d['database']['counts'] is not None" | grep -q True; then
+  echo "PASS  ping reports database up with entity counts"; PASS=$((PASS+1));
+else echo "FAIL  ping payload missing status or counts: $PING"; FAIL=$((FAIL+1)); fi
+if echo "$PING" | grep -q "@taskboard.local\|password_hash\|token_hash"; then
+  echo "FAIL  ping leaked sensitive data"; FAIL=$((FAIL+1));
+else echo "PASS  ping leaks no sensitive data"; PASS=$((PASS+1)); fi
+
 echo
 echo "RESULT: $PASS passed, $FAIL failed"
